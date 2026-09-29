@@ -6,9 +6,9 @@ Time Since is a private, native Android app for keeping any number of live **tim
 
 - Unlimited independently running count-up and countdown timers
 - Pause/resume, restart with history, or choose an exact date and time
-- Six accessible counter colors and six independently saved display formats
+- Sixteen preset counter colors, custom HEX/HSV colors, and six independently saved display formats
 - Live, battery-conscious one-second updates while the app is visible
-- Move-up/move-down ordering persisted with Room
+- Long-press drag-and-drop ordering persisted with Room
 - Per-counter milestone/countdown notifications scheduled with WorkManager
 - System share sheet, restart history, and confirmation before destructive actions
 - System, light, and dark themes plus configurable defaults
