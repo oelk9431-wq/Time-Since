@@ -31,5 +31,14 @@ class CounterRepository(private val db: AppDatabase) {
         val other = all.getOrNull(index + direction) ?: return
         db.withTransaction { dao.update(counter.copy(position = other.position)); dao.update(other.copy(position = counter.position)) }
     }
+    /** Persists a complete ordering in one transaction, producing unique positions. */
+    suspend fun updateOrder(orderedIds: List<Long>) = db.withTransaction {
+        val byId = counters.first().associateBy(Counter::id)
+        orderedIds.forEachIndexed { position, id ->
+            byId[id]?.let { counter ->
+                if (counter.position != position) dao.update(counter.copy(position = position))
+            }
+        }
+    }
     private suspend fun countersSnapshot(): List<Counter> = counters.first()
 }
