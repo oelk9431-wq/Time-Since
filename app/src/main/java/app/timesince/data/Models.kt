@@ -48,6 +48,6 @@ class Converters {
     @Query("DELETE FROM restarts WHERE counterId=:id") suspend fun clearHistory(id: Long)
 }
 
-@Database(entities = [Counter::class, RestartRecord::class], version = 1, exportSchema = false)
+@Database(entities = [Counter::class, RestartRecord::class], version = 1, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() { abstract fun counters(): CounterDao }
