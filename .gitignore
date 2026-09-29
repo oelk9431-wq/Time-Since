@@ -1,0 +1,11 @@
+.gradle/
+.idea/
+local.properties
+**/build/
+*.iml
+*.apk
+# The CI runner installs the pinned Gradle distribution. Wrapper outputs are
+# intentionally excluded so pull requests contain text/source files only.
+gradlew
+gradlew.bat
+gradle/wrapper/
