@@ -21,6 +21,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
     fun setTheme(theme: ThemeMode) = run { settingsRepo.theme(theme) }
     fun setDefaults(format: DisplayFormat, color: Long) = run { settingsRepo.defaults(format, color) }
+    fun reorderCounters(orderedIds: List<Long>) = run { repo.updateOrder(orderedIds) }
     fun setRunning(counter: Counter, running: Boolean) = run {
         repo.setRunning(counter, running, System.currentTimeMillis())
         repo.counter(counter.id).first()?.let { NotificationWorker.schedule(getApplication(), it) }
