@@ -87,4 +87,86 @@ private fun pickDateTime(context:android.content.Context,initial:Long,onPicked:(
 
 @Composable fun HistoryScreen(vm:MainViewModel,id:Long,back:()->Unit){val history by vm.history(id).collectAsStateWithLifecycle(emptyList());var clear by remember{mutableStateOf(false)};Scaffold(topBar={TopAppBar(title={Text("Restart history")},navigationIcon={IconButton(back){Icon(Icons.AutoMirrored.Filled.ArrowBack,"Back")}},actions={if(history.isNotEmpty())IconButton({clear=true}){Icon(Icons.Default.DeleteSweep,"Clear history")}})}){pad->if(history.isEmpty())Box(Modifier.fillMaxSize().padding(pad),contentAlignment=Alignment.Center){Text("No restarts yet")}else LazyColumn(Modifier.padding(pad)){items(history){h->ListItem(headlineContent={Text(DateFormat.getDateTimeInstance().format(Date(h.restartedAt)))},supportingContent={Text("Previous start: ${DateFormat.getDateTimeInstance().format(Date(h.previousEventAt))}\nElapsed: ${TimerMath.format(h.elapsedMillis,DisplayFormat.LONG,false)}")});HorizontalDivider()}}};if(clear)AlertDialog(onDismissRequest={clear=false},title={Text("Clear restart history?")},confirmButton={TextButton({vm.run{vm.repo.clearHistory(id)};clear=false}){Text("Clear")}},dismissButton={TextButton({clear=false}){Text("Cancel")}})}
 
-@Composable fun SettingsScreen(vm:MainViewModel,back:()->Unit){val settings by vm.settings.collectAsStateWithLifecycle();Scaffold(topBar={TopAppBar(title={Text("Settings")},navigationIcon={IconButton(back){Icon(Icons.AutoMirrored.Filled.ArrowBack,"Back")}})}){pad->Column(Modifier.padding(pad).padding(20.dp)){Text("Theme",style=MaterialTheme.typography.titleMedium);ThemeMode.entries.forEach{mode->Row(Modifier.fillMaxWidth().clickable{vm.setTheme(mode)},verticalAlignment=Alignment.CenterVertically){RadioButton(settings.theme==mode,{vm.setTheme(mode)});Text(mode.name.lowercase().replaceFirstChar{it.uppercase()})}};HorizontalDivider(Modifier.padding(vertical=16.dp));Text("Default timer format",style=MaterialTheme.typography.titleMedium);var expanded by remember{mutableStateOf(false)};Box{OutlinedButton({expanded=true}){Text(settings.defaultFormat.name)};DropdownMenu(expanded,{expanded=false}){DisplayFormat.entries.forEach{f->DropdownMenuItem({Text(f.name)},{vm.setDefaults(f,settings.defaultColor);expanded=false})}}};Text("Default color",Modifier.padding(top=16.dp));Row{palette.forEach{p->Surface(color=Color(p),shape=RoundedCornerShape(50),modifier=Modifier.padding(4.dp).size(if(settings.defaultColor==p)40.dp else 32.dp).clickable{vm.setDefaults(settings.defaultFormat,p)}){}}};HorizontalDivider(Modifier.padding(vertical=22.dp));Text("About",style=MaterialTheme.typography.titleMedium);Text("Time Since\nVersion ${BuildConfig.VERSION_NAME}\nPrivate, offline, and ad-free.",Modifier.padding(top=8.dp))}}
+@Composable
+fun SettingsScreen(vm: MainViewModel, back: () -> Unit) {
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    var expanded by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = {
+                    IconButton(onClick = back) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(20.dp)
+        ) {
+            Text("Theme", style = MaterialTheme.typography.titleMedium)
+            ThemeMode.entries.forEach { mode ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { vm.setTheme(mode) },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = settings.theme == mode,
+                        onClick = { vm.setTheme(mode) }
+                    )
+                    Text(mode.name.lowercase().replaceFirstChar { it.uppercase() })
+                }
+            }
+
+            HorizontalDivider(Modifier.padding(vertical = 16.dp))
+            Text("Default timer format", style = MaterialTheme.typography.titleMedium)
+            Box {
+                OutlinedButton(onClick = { expanded = true }) {
+                    Text(settings.defaultFormat.name)
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DisplayFormat.entries.forEach { format ->
+                        DropdownMenuItem(
+                            text = { Text(format.name) },
+                            onClick = {
+                                vm.setDefaults(format, settings.defaultColor)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Text("Default color", Modifier.padding(top = 16.dp))
+            Row {
+                palette.forEach { color ->
+                    Surface(
+                        color = Color(color),
+                        shape = RoundedCornerShape(50),
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(if (settings.defaultColor == color) 40.dp else 32.dp)
+                            .clickable { vm.setDefaults(settings.defaultFormat, color) }
+                    ) {}
+                }
+            }
+
+            HorizontalDivider(Modifier.padding(vertical = 22.dp))
+            Text("About", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Time Since\nVersion ${BuildConfig.VERSION_NAME}\nPrivate, offline, and ad-free.",
+                Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
